@@ -46,6 +46,11 @@ public class UserController {
         return new ResponseEntity<>(secretSantaGroupService.getFriendshipRequests(source.getClaimAsString("sub")),
                 HttpStatus.OK);
     }
+    @GetMapping("/search-users")
+    public ResponseEntity<List<SecretSantaUser>> getUser(@AuthenticationPrincipal Jwt jwt,
+                                                         @RequestParam String name){
+        return new ResponseEntity<>(userService.getUsers(name), HttpStatus.OK);
+    }
 
     @PostMapping("/friend-request")
     public ResponseEntity<SecretSantaFriendship> sendFriendRequest(@AuthenticationPrincipal Jwt source,

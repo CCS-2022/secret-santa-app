@@ -23,8 +23,7 @@ public interface SecretSantaGroupMemberRepository extends JpaRepository<SecretSa
 
     @Query(value = "SELECT gm FROM SecretSantaGroupMember gm " +
             "WHERE gm.groupId = :groupId " +
-            "AND gm.userId = :userId " +
-            "AND admin = true")
+            "AND gm.userId = :userId ")
     Optional<SecretSantaGroupMember> findByUserIdAndGroupId(String userId, Long groupId);
 
     @Query(value = "SELECT u FROM SecretSantaUser u " +
