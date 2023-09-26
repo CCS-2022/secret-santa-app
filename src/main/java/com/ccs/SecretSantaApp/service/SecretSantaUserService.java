@@ -1,12 +1,12 @@
 package com.ccs.SecretSantaApp.service;
 
 import com.ccs.SecretSantaApp.dao.SecretSantaFriendship;
-import com.ccs.SecretSantaApp.dao.SecretSantaItem;
 import com.ccs.SecretSantaApp.dao.SecretSantaNotification;
 import com.ccs.SecretSantaApp.dao.SecretSantaUser;
 import com.ccs.SecretSantaApp.exception.EntityNotCreated;
 import com.ccs.SecretSantaApp.repository.SecretSantaFriendshipRepository;
 import com.ccs.SecretSantaApp.repository.SecretSantaNotificationRepository;
+import com.ccs.SecretSantaApp.repository.SecretSantaUserRepository;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -25,6 +25,8 @@ import java.util.Optional;
 public class SecretSantaUserService {
     @Autowired
     SecretSantaFriendshipRepository friendshipRepository;
+    @Autowired
+    SecretSantaUserRepository secretSantaUserRepository;
     @Autowired
     SecretSantaNotificationRepository notificationRepository;
     private final Keycloak keycloak;
@@ -112,10 +114,6 @@ public class SecretSantaUserService {
         }
     }
 
-    public List<SecretSantaItem> viewWishlist(String userId){
-        return null;
-    }
-
     public SecretSantaFriendship removeFriend(String user, SecretSantaUser friend) {
         Optional<SecretSantaFriendship> friendship = friendshipRepository.getFriendshipByPartiesId(user,
                 friend.getUserId(),
@@ -127,5 +125,9 @@ public class SecretSantaUserService {
             friendshipRepository.deleteById(friendship.get().getFriendshipId());
         }
         return friendship.get();
+    }
+
+    public List<SecretSantaUser> getUsers(String name) {
+        return secretSantaUserRepository.getUsers(name);
     }
 }
