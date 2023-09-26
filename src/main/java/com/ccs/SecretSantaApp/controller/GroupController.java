@@ -48,7 +48,7 @@ public class GroupController {
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
         if(user.isEmpty() || !user.get().getAdmin()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-
+        secretSantaGroupService.shuffleGroup(groupId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
