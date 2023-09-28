@@ -110,7 +110,8 @@ public class SecretSantaUserService {
             return friendshipRepository.save(friendship.get());
         }else{
             friendshipRepository.deleteById(friendship.get().getFriendshipId());
-            return null;
+            friendship.get().setStatus(false);
+            return friendship.get();
         }
     }
 
