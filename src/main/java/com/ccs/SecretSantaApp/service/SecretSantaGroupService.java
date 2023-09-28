@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class SecretSantaGroupService {
@@ -99,7 +96,17 @@ public class SecretSantaGroupService {
     }
 
     public List<SecretSantaFriendship> getFriendshipRequests(String sub) {
-      return secretSantaFriendshipRepository.findAllRequestsByUserId(sub);
+        List<Object[]> friendships = secretSantaFriendshipRepository.findAllRequestsByUserId(sub);
+        List<SecretSantaFriendship> decoratedFriendships = new ArrayList<>();
+
+        for(Object[] obj: friendships){
+            SecretSantaFriendship friendship = (SecretSantaFriendship) obj[2];
+            friendship.setRequesterFirstName((String) obj[0]);
+            friendship.setRequesterLastName((String) obj[1]);
+            decoratedFriendships.add(friendship);
+        }
+
+        return decoratedFriendships;
     }
 
     public SecretSantaGroup addMembersToGroup(String sub, SecretSantaGroup santaGroupRequest) throws Exception {
