@@ -32,8 +32,9 @@ public interface SecretSantaFriendshipRepository extends JpaRepository<SecretSan
     Optional<SecretSantaFriendship> getFriendshipRequests(@Param("requesterId") String requesterId,
                                                              @Param("recipientId") String recipientId);
 
-    @Query(value = "SELECT f FROM SecretSantaFriendship f " +
+    @Query(value = "SELECT u.firstName, u.lastName, f FROM SecretSantaFriendship f " +
+            "JOIN SecretSantaUser u ON f.requester = u.userId " +
             "WHERE f.recipient = :recipientId " +
-            "AND status = null")
-    List<SecretSantaFriendship> findAllRequestsByUserId(@Param("recipientId") String recipientId);
+            "AND f.status is null")
+    List<Object[]> findAllRequestsByUserId(@Param("recipientId") String recipientId);
 }

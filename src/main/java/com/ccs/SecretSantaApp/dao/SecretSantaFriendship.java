@@ -17,12 +17,16 @@ public class SecretSantaFriendship{
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "friendship_id_seq")
     @SequenceGenerator(name = "friendship_id_seq", sequenceName = "friendship_id_seq", allocationSize = 1)
     private Long friendshipId;
-
     private String requester;
+    @Transient
+    private String requesterFirstName;
+    @Transient
+    private String requesterLastName;
     private String recipient;
     private Boolean status;
     @Column(name = "date_requested")
     private Date dateRequested;
     @Column(name = "date_processed")
     private Date dateProcessed;
+
 }
