@@ -50,7 +50,7 @@ public class ItemController {
         if(!item.getUserId().equals(source.getClaimAsString("sub"))){
             throw new Exception("Could not remove");
         }
-        secretSantaItemRepository.delete(item);
+        secretSantaItemRepository.deleteById(item.getItemId());
         return new ResponseEntity<>(item, HttpStatus.OK);
     }
 }
