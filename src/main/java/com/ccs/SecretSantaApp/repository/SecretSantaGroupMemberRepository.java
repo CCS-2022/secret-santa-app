@@ -3,6 +3,7 @@ package com.ccs.SecretSantaApp.repository;
 import com.ccs.SecretSantaApp.dao.SecretSantaGroupMember;
 import com.ccs.SecretSantaApp.dao.SecretSantaUser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,9 @@ public interface SecretSantaGroupMemberRepository extends JpaRepository<SecretSa
             "JOIN SecretSantaGroupMember gm ON u.userId = gm.userId " +
             "WHERE gm.groupId = :groupId")
     List<SecretSantaUser> getGroupMembers(@Param("groupId") Long groupId);
+
+    @Modifying
+    @Query(value = "DELETE FROM SecretSantaGroupMember gm " +
+            "WHERE gm.groupId = :groupId")
+    void deleteAllByGroupId(Long groupId);
 }

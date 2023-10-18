@@ -44,11 +44,21 @@ public class GroupController {
 
     @GetMapping("/shuffle")
     public ResponseEntity<HttpStatus> shuffleGroup(@AuthenticationPrincipal Jwt source,
-                                                         @RequestParam Long groupId){
+                                                   @RequestParam Long groupId){
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
         if(user.isEmpty() || !user.get().getAdmin()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         secretSantaGroupService.shuffleGroup(groupId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/delete")
+    public ResponseEntity<HttpStatus> deleteGroup(@AuthenticationPrincipal Jwt source,
+                                                   @RequestParam Long groupId){
+        Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
+                findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
+        if(user.isEmpty() || !user.get().getAdmin()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        secretSantaGroupService.deleteGroup(groupId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

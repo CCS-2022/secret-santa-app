@@ -8,6 +8,7 @@ import com.ccs.SecretSantaApp.repository.SecretSantaFriendshipRepository;
 import com.ccs.SecretSantaApp.repository.SecretSantaGroupMemberRepository;
 import com.ccs.SecretSantaApp.repository.SecretSantaGroupRepository;
 import com.ccs.SecretSantaApp.repository.SecretSantaUserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -151,5 +152,11 @@ public class SecretSantaGroupService {
         HashMap<SecretSantaUser, SecretSantaUser> pairs = pairGenerator.generatePairs(users);
 
         emailSenderService.sendEmails(pairs);
+    }
+
+    @Transactional
+    public void deleteGroup(Long groupId) {
+        secretSantaGroupMemberRepository.deleteAllByGroupId(groupId);
+        secretSantaGroupRepository.deleteById(groupId);
     }
 }
