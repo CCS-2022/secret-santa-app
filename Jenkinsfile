@@ -63,7 +63,8 @@ pipeline {
                 // Use the credentials you configured in Jenkins
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
-                       
+                        pwd
+                        ls
                         docker build -t ccsadmindocker/ssbackend:${ENVS}-latest .
                         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
                         docker push ccsadmindocker/ssbackend:DEV-latest
