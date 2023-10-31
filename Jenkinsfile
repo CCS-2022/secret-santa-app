@@ -81,10 +81,10 @@ pipeline {
                     echo 'Using remote command over ssh'
                     sh 'echo "Today is:" date'
                     echo '*** Executing remote commands ***'
-                    sh 'ssh -tt root@192.168.1.235 sudo docker stop ssbackend'
-                    sh 'ssh -tt root@192.168.1.235 sudo docker rm ssbackend'
-                    sh 'sudo docker pull ccsadmindocker/ssbackend:DEV-latest'
-                    sh "ssh -tt root@192.168.1.235 'sudo docker run -d --name ssbackend --network=bridge -p 8080:8080 ccsadmindocker/ssbackend:${ENVS}-latest'"
+                    sh 'ssh -tt secretsanta@192.168.1.235 docker stop ssbackend'
+                    sh 'ssh -tt secretsanta@192.168.1.235 docker rm ssbackend'
+                    sh 'ssh -tt secretsanta@192.168.1.235 docker pull ccsadmindocker/ssbackend:DEV-latest'
+                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --network=bridge -p 8080:8080 ccsadmindocker/ssbackend:${ENVS}-latest'"
                     }                
             }
         }
