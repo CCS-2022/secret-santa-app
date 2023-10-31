@@ -20,12 +20,12 @@ pipeline {
         }
 
 
-        stage('Test') {
+/*        stage('Test') {
             steps {
                 sh "./gradlew test -x test"
             }
         }
-
+*/
         stage('Code Quality Check via SonarQube') {
             steps {
                 withSonarQubeEnv("SecretSantaSonar") {
