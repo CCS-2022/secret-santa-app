@@ -1,8 +1,8 @@
 FROM ccsadmindocker/ssbackend:base
 
-COPY . .
+#COPY . .
 
-#COPY ./build/libs/*-SNAPSHOT.jar app/ssbackend.jar
+COPY ./build/libs/*-SNAPSHOT.jar app/ssbackend.jar
 
 WORKDIR /app
 
