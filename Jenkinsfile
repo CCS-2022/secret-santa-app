@@ -49,7 +49,6 @@ pipeline {
 
 
         stage('Create Image && Upload to DockerHub') {
-            agent any
             steps {
                 script {
                     try {
