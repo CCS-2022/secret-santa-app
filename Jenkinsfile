@@ -6,26 +6,25 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
+        stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/CCS-2022/secret-santa-app.git'
             }
         }
 
-        stage('Build') {
+        stage('Building Project') {
             steps {
                 sh "./gradlew wrapper --gradle-version 8.4"
                 sh "./gradlew clean build -x test"
             }
         }
 
-
-/*        stage('Test') {
+        stage('Testing Build') {
             steps {
                 sh "./gradlew test -x test"
             }
         }
-*/
+
         stage('Code Quality Check via SonarQube') {
             steps {
                 withSonarQubeEnv("SecretSantaSonar") {
@@ -42,8 +41,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'cd ./build/libs/'
-                sh 'jfrog rt upload --url http://192.168.1.239:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} ./*SNAPSHOT.jar ss-${ENVS}/'
+                sh 'jfrog rt upload --url http://192.168.1.239:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} ./build/libs/*SNAPSHOT.jar ss-${ENVS}/'
                 }
         }
 
@@ -57,20 +55,13 @@ pipeline {
                             echo "Image does not exist. Error: ${e}"
                         }
                     }
-                //sh 'docker build -t ccsadmindocker/ssbackend:${ENVS}-latest .'
-                //sh 'docker push ccsadmindocker/ssbackend:DEV-latest'
-                // Use the credentials you configured in Jenkins
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
-                        pwd
-                        ls
                         docker build -t ccsadmindocker/ssbackend:${ENVS}-latest .
                         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
                         docker push ccsadmindocker/ssbackend:DEV-latest
                     '''
                 }
-            //    sh 'sudo docker save -o /home/ssbackend.tar ccsadmindocker/ssbackend:${ENVS}-latest'
-            //    sh 'scp "/home/ssbackend.tar" root@192.168.1.235:/home'
             }
         }
 
@@ -78,8 +69,6 @@ pipeline {
         stage("Deploy To Container"){
             steps {
                 script {
-                    echo 'Using remote command over ssh'
-                    sh 'echo "Today is:" date'
                     echo '*** Executing remote commands ***'
                     try {
                         sh 'ssh -tt secretsanta@192.168.1.235 docker stop ssbackend'
@@ -97,5 +86,12 @@ pipeline {
             }
         }
 
+        stage("Cleaning Up Storage Space"){
+            steps {
+                sh 'docker system prune -f'
+                echo '*** Cleaning remote server ***'
+                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -f'                          
+            }
+        }
     }
 }
