@@ -30,20 +30,6 @@ public class SecurityConfig {
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // CORS configuration
-<<<<<<< HEAD:src/main/java/com/ccs/SecretSantaApp/config/SecurityConfig.java
-                .cors().configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://192.168.1.235:5173"));
-                        config.setAllowedMethods(Collections.singletonList("*"));
-                        config.setAllowCredentials(true);
-                        config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setExposedHeaders(Arrays.asList("Authorization"));
-                        config.setMaxAge(3600L);
-                        return config;
-                    }
-=======
                 .cors().configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
@@ -53,7 +39,6 @@ public class SecurityConfig {
                     config.setExposedHeaders(Arrays.asList("Authorization"));
                     config.setMaxAge(3600L);
                     return config;
->>>>>>> cdf7ae8 (cert configs):src/main/java/com/ccs/secretsantaapp/config/SecurityConfig.java
                 }).and()
                 // CSRF Configuration
                 .csrf((csrf) ->
