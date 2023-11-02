@@ -82,7 +82,7 @@ pipeline {
                         echo "Container does not exist. Error: ${e}"
                     }
                     sh 'ssh -tt secretsanta@192.168.1.235 docker pull ccsadmindocker/ssbackend:DEV-latest'
-                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --network=bridge -p 8080:8080 ccsadmindocker/ssbackend:${ENVS}-latest'"
+                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --restart unless-stopped --network=bridge -p 8080:8080 ccsadmindocker/ssbackend:${ENVS}-latest'"
                     }                
             }
         }
