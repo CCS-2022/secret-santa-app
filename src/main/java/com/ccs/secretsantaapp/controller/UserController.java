@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 
 /**
@@ -55,15 +56,15 @@ public class UserController {
     public ResponseEntity<SecretSantaFriendship> sendFriendRequest(@AuthenticationPrincipal Jwt source,
                                                                    @RequestBody SecretSantaFriendship friendRequest) throws EntityNotCreated {
         friendRequest.setRequester(source.getClaimAsString("sub"));
-        return new ResponseEntity<SecretSantaFriendship>(userService.sendFriendRequest(friendRequest),
+        return new ResponseEntity<>(userService.sendFriendRequest(friendRequest),
                 HttpStatus.CREATED);
     }
 
     @PostMapping("/process-request")
     public ResponseEntity<SecretSantaFriendship> processFriendshipRequest(@AuthenticationPrincipal Jwt source,
-                                                                         @RequestBody SecretSantaFriendship friendRequest) throws Exception {
+                                                                         @RequestBody SecretSantaFriendship friendRequest) throws NotFoundException, EntityNotCreated {
         if(!source.getClaimAsString("sub").equals(friendRequest.getRecipient()))
-            throw new Exception("User identity is not valid");
+            throw new NotFoundException("User identity is not valid");
         return new ResponseEntity<>(userService.processFriendshipRequest(friendRequest),
                 HttpStatus.OK);
 

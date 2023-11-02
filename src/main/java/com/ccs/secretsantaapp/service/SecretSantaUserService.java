@@ -77,14 +77,14 @@ public class SecretSantaUserService {
         return friendRequest;
     }
 
-    public SecretSantaFriendship processFriendshipRequest(SecretSantaFriendship friendRequest) throws Exception {
+    public SecretSantaFriendship processFriendshipRequest(SecretSantaFriendship friendRequest) throws EntityNotCreated {
         Optional<SecretSantaFriendship> friendship = friendshipRepository.findById(friendRequest.getFriendshipId());
         if (friendship.isEmpty()){
             throw new EntityNotCreated("Friendship does not exist!");
         }
 
         // update accepted date only if the status is true which means accepted
-        if (friendRequest.getStatus()) {
+        if (Boolean.TRUE.equals(friendRequest.getStatus())) {
             friendship.get().setDateProcessed(Date.valueOf(LocalDate.now()));
             friendship.get().setStatus(friendRequest.getStatus());
             return friendshipRepository.save(friendship.get());

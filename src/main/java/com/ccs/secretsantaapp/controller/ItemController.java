@@ -1,6 +1,7 @@
 package com.ccs.secretsantaapp.controller;
 
 import com.ccs.secretsantaapp.dao.SecretSantaItem;
+import com.ccs.secretsantaapp.exception.EntityNotCreated;
 import com.ccs.secretsantaapp.repository.SecretSantaItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.CannotProceedException;
 import java.util.List;
 
 @RestController
@@ -36,7 +38,7 @@ public class ItemController {
     public ResponseEntity<SecretSantaItem> updateItem(@AuthenticationPrincipal Jwt source,
                                                       @RequestBody SecretSantaItem item) throws Exception {
         if(!item.getUserId().equals(source.getClaimAsString("sub"))){
-            throw new Exception("Could not update");
+            throw new EntityNotCreated("Could not update");
         }
         secretSantaItemRepository.updateItem(item.getItemId(), item.getName(),
                 item.getItemUrl(), item.getGroupId(), item.getUserId());
@@ -46,9 +48,9 @@ public class ItemController {
 
     @PostMapping("/remove")
     public ResponseEntity<SecretSantaItem> removeItem(@AuthenticationPrincipal Jwt source,
-                                                      @RequestBody SecretSantaItem item) throws Exception {
+                                                      @RequestBody SecretSantaItem item) throws CannotProceedException {
         if(!item.getUserId().equals(source.getClaimAsString("sub"))){
-            throw new Exception("Could not remove");
+            throw new CannotProceedException("Could not remove");
         }
         secretSantaItemRepository.deleteById(item.getItemId());
         return new ResponseEntity<>(item, HttpStatus.OK);

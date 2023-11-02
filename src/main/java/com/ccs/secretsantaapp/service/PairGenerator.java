@@ -2,16 +2,16 @@ package com.ccs.secretsantaapp.service;
 
 import com.ccs.secretsantaapp.dao.SecretSantaUser;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.logging.Logger;
 
 @Service
 public class PairGenerator {
     private static final Logger logger = Logger.getLogger(String.valueOf(PairGenerator.class));
+    private final Random rand = new Random();
+
     public Map<SecretSantaUser, SecretSantaUser> generatePairs(List<SecretSantaUser> participants) {
         HashMap<SecretSantaUser, SecretSantaUser> pairs = new HashMap<>();
-        Random rand = new Random();
         for(int i = 0; i < participants.size(); i++){
             int randomSpot = rand.nextInt(participants.size());
             swap((ArrayList<SecretSantaUser>) participants, i, randomSpot);
