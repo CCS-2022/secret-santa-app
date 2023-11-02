@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Service
 public class EmailSenderService {
+    private static final Logger logger = Logger.getLogger(String.valueOf(EmailSenderService.class));
     @Autowired
     private JavaMailSender javaMailSender;
-    private final Keycloak keycloak;
+    private final Keycloak KEYCLOAK;
     private final String REALM;
     @Autowired
     public EmailSenderService(@Value("${keycloak.server-url}") String serverUrl,
@@ -26,7 +28,7 @@ public class EmailSenderService {
                                   @Value("${keycloak.client-secret}") String clientSecret,
                                   @Value("${keycloak.grant-type}") String grantType){
         this.REALM = realm;
-        this.keycloak = KeycloakBuilder.builder()
+        this.KEYCLOAK = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(REALM)
                 .clientId(clientId)
@@ -35,10 +37,10 @@ public class EmailSenderService {
                 .build();
     }
 
-    public void sendEmails(HashMap<SecretSantaUser, SecretSantaUser> pairs){
+    public void sendEmails(Map<SecretSantaUser, SecretSantaUser> pairs){
         for(Map.Entry<SecretSantaUser, SecretSantaUser> entry : pairs.entrySet()){
             SimpleMailMessage message = new SimpleMailMessage();
-            UserRepresentation user = keycloak
+            UserRepresentation user = KEYCLOAK
                     .realm(REALM)
                     .users()
                     .get(entry.getKey().getUserId())
@@ -50,7 +52,7 @@ public class EmailSenderService {
             message.setText("Your gift will be for: " + entry.getValue().getFirstName());
 
             javaMailSender.send(message);
-            System.out.println("Email sent to " + user.getEmail());
+            logger.info("Email sent to " + user.getEmail());
         }
 
     }

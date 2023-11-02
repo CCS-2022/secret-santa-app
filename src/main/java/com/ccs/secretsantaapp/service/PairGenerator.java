@@ -3,20 +3,18 @@ package com.ccs.secretsantaapp.service;
 import com.ccs.secretsantaapp.dao.SecretSantaUser;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class PairGenerator {
-    public HashMap<SecretSantaUser, SecretSantaUser> generatePairs(ArrayList<SecretSantaUser> participants) {
+    private static final Logger logger = Logger.getLogger(String.valueOf(PairGenerator.class));
+    public Map<SecretSantaUser, SecretSantaUser> generatePairs(List<SecretSantaUser> participants) {
         HashMap<SecretSantaUser, SecretSantaUser> pairs = new HashMap<>();
-
+        Random rand = new Random();
         for(int i = 0; i < participants.size(); i++){
-            Random rand = new Random();
             int randomSpot = rand.nextInt(participants.size());
-            swap(participants, i, randomSpot);
+            swap((ArrayList<SecretSantaUser>) participants, i, randomSpot);
         }
 
         for(int i = 0; i < participants.size(); i++){
@@ -40,7 +38,7 @@ public class PairGenerator {
 
     private void printPairs(HashMap<SecretSantaUser, SecretSantaUser> pairs){
         for(Map.Entry<SecretSantaUser, SecretSantaUser> entry : pairs.entrySet()){
-            System.out.println(entry.getKey().getFirstName() + " -> " + entry.getValue().getFirstName());
+            logger.info(entry.getKey().getFirstName() + " -> " + entry.getValue().getFirstName());
         }
     }
 }
