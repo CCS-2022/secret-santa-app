@@ -39,12 +39,10 @@ keycloak:
   client-secret: ${CLIENT_SECRET}
   grant-type: ${GRANT_TYPE}
 
-#server:
-#  port: 8443
-#  ssl:
-#    key-store-type: PEM
-#    key-store: classpath:server.crt.pem
-##    key-store-type: PKCS12
-##    key-store: classpath:keystore.p12
-#    #key-store-password: ${KEYSTORE_PASS}
-#    #key-alias: ${KEYSTORE_ALIAS}
+server:
+  port: 8443
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:keystore.p12
+    key-store-password: ${KEYSTORE_PASS}
+    key-alias: ${KEYSTORE_ALIAS}

@@ -7,6 +7,7 @@ import com.ccs.secretsantaapp.repository.SecretSantaGroupMemberRepository;
 import com.ccs.secretsantaapp.repository.SecretSantaUserRepository;
 import com.ccs.secretsantaapp.service.SecretSantaGroupService;
 import com.ccs.secretsantaapp.dao.SecretSantaGroup;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +40,7 @@ public class GroupController {
                                                                  @AuthenticationPrincipal Jwt source){
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), id);
-        if(user.isEmpty()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if(user.isEmpty()) return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(secretSantaGroupService.getGroupMembers(id), HttpStatus.OK);
     }
 
@@ -47,7 +49,7 @@ public class GroupController {
                                                    @RequestParam Long groupId){
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
-        if(user.isEmpty() || !user.get().getAdmin()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if(user.isEmpty() || Boolean.FALSE.equals(user.get().getAdmin())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         secretSantaGroupService.shuffleGroup(groupId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -57,7 +59,7 @@ public class GroupController {
                                                    @RequestParam Long groupId){
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
-        if(user.isEmpty() || !user.get().getAdmin()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if(user.isEmpty() || Boolean.FALSE.equals(user.get().getAdmin())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         secretSantaGroupService.deleteGroup(groupId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -68,21 +70,20 @@ public class GroupController {
                                            @RequestParam String userId){
         Optional<SecretSantaGroupMember> user = secretSantaGroupMemberRepository.
                 findByUserIdAndGroupId(source.getClaimAsString("sub"), groupId);
-        if(user.isEmpty()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
         user = secretSantaGroupMemberRepository.findByUserIdAndGroupId(userId, groupId);
 
-        if(user.isEmpty()) return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-
+        if(user.isEmpty()) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(user.get().getAdmin(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<SecretSantaGroup> createGroup(@RequestBody SecretSantaGroup santaGroupRequest,
-                                                        @AuthenticationPrincipal Jwt source) throws Exception {
+                                                        @AuthenticationPrincipal Jwt source){
         String principalId = source.getClaimAsString("sub");
         if(!principalId.equals(santaGroupRequest.getCreatorId())){
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(secretSantaGroupService.createGroup(santaGroupRequest), HttpStatus.CREATED);
     }

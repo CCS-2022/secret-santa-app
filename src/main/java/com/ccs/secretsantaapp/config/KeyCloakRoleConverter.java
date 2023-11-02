@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class extracts roles information from token and converts them into roles the app can understand
@@ -47,12 +48,10 @@ public class KeyCloakRoleConverter implements Converter<Jwt, Collection<GrantedA
          * 6. .collect(Collectors.toList()): Uses the collect() method to convert the resulting stream of
          * GrantedAuthority objects back into a List<GrantedAuthority>.
          */
-        Collection<GrantedAuthority> grantedAuthorities =((List<String>) realmAccess.get("roles"))
+        return ((List<String>) realmAccess.get("roles"))
                 .stream()
                 .map(roleName -> "ROLE_" + roleName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-
-        return grantedAuthorities;
     }
 }
