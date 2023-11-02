@@ -1,11 +1,9 @@
 package com.ccs.secretsantaapp.service;
 
 import com.ccs.secretsantaapp.dao.SecretSantaFriendship;
-import com.ccs.secretsantaapp.dao.SecretSantaNotification;
 import com.ccs.secretsantaapp.dao.SecretSantaUser;
 import com.ccs.secretsantaapp.exception.EntityNotCreated;
 import com.ccs.secretsantaapp.repository.SecretSantaFriendshipRepository;
-import com.ccs.secretsantaapp.repository.SecretSantaNotificationRepository;
 import com.ccs.secretsantaapp.repository.SecretSantaUserRepository;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -27,9 +25,8 @@ public class SecretSantaUserService {
     SecretSantaFriendshipRepository friendshipRepository;
     @Autowired
     SecretSantaUserRepository secretSantaUserRepository;
-    @Autowired
-    SecretSantaNotificationRepository notificationRepository;
-    private final Keycloak keycloak;
+
+    private final Keycloak KEYCLOAK;
     private final String REALM;
     @Autowired
     public SecretSantaUserService(@Value("${keycloak.server-url}") String serverUrl,
@@ -38,7 +35,7 @@ public class SecretSantaUserService {
                                   @Value("${keycloak.client-secret}") String clientSecret,
                                   @Value("${keycloak.grant-type}") String grantType){
         this.REALM = realm;
-        this.keycloak = KeycloakBuilder.builder()
+        this.KEYCLOAK = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm(REALM)
                 .clientId(clientId)
@@ -55,7 +52,7 @@ public class SecretSantaUserService {
             for (SecretSantaFriendship friendship : friendships) {
                 String friendId = (friendship.getRequester().equals(userId)) ?
                         friendship.getRecipient() : friendship.getRequester();
-                UserRepresentation friendRepresentation = keycloak.realm(REALM).users().get(friendId).toRepresentation();
+                UserRepresentation friendRepresentation = KEYCLOAK.realm(REALM).users().get(friendId).toRepresentation();
                 SecretSantaUser friend = new SecretSantaUser();
                 friend.setUserId(friendRepresentation.getId());
                 friend.setFirstName(friendRepresentation.getFirstName());
@@ -77,30 +74,13 @@ public class SecretSantaUserService {
         friendRequest.setDateProcessed(null);
         friendRequest.setStatus(null);
         friendshipRepository.save(friendRequest);
-
-        // REPLACE THIS - Maybe create method for sending notifications in a different service?
-        // Create notification
-        SecretSantaNotification notification = new SecretSantaNotification(); // Since we have a user table now, we can also use that and relieve keycloak server from handling more requests
-        UserRepresentation requestor = keycloak
-                .realm(REALM)
-                .users()
-                .get(friendRequest.getRequester())
-                .toRepresentation();
-        notification.setRecipientId(friendRequest.getRecipient());
-        notification.setTitle("Friend request!");
-        notification.setBody(requestor.getFirstName() + " " + requestor.getLastName()
-        + " would like to become your friend!");
-        notification.setDateCreated(friendRequest.getDateRequested());
-        notification.setRecipientId(friendRequest.getRecipient());
-        notificationRepository.save(notification);
-
         return friendRequest;
     }
 
     public SecretSantaFriendship processFriendshipRequest(SecretSantaFriendship friendRequest) throws Exception {
         Optional<SecretSantaFriendship> friendship = friendshipRepository.findById(friendRequest.getFriendshipId());
         if (friendship.isEmpty()){
-            throw new Exception("Friendship does not exist!");
+            throw new EntityNotCreated("Friendship does not exist!");
         }
 
         // update accepted date only if the status is true which means accepted

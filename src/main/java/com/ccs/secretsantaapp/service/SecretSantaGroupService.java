@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-
+import javax.naming.CannotProceedException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
@@ -114,12 +114,12 @@ public class SecretSantaGroupService {
 
         // Check if person adding members is an admin
         if(!secretSantaGroupMemberRepository.isAdmin(sub, santaGroupRequest.getGroupId())){
-            throw new Exception("Cannot process request");
+            throw new CannotProceedException("Cannot process request");
         }
 
         // Get group if it exists
         Optional<SecretSantaGroup> group = secretSantaGroupRepository.findById(santaGroupRequest.getGroupId());
-        if(group.isEmpty()) throw new Exception("Cannot process request");
+        if(group.isEmpty()) throw new CannotProceedException("Cannot process request");
 
 
         for(String id : santaGroupRequest.getMemberIds()){
@@ -149,9 +149,9 @@ public class SecretSantaGroupService {
 
     public void shuffleGroup(Long groupId){
         ArrayList<SecretSantaUser> users = (ArrayList<SecretSantaUser>) secretSantaGroupMemberRepository.getGroupMembers(groupId);
-        HashMap<SecretSantaUser, SecretSantaUser> pairs = pairGenerator.generatePairs(users);
+        Map<SecretSantaUser, SecretSantaUser> pairs = pairGenerator.generatePairs(users);
 
-        emailSenderService.sendEmails(pairs);
+        emailSenderService.sendEmails((HashMap<SecretSantaUser, SecretSantaUser>) pairs);
     }
 
     @Transactional
