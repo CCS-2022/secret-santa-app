@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // CORS configuration
                 .cors().configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("https://ss.cloudconsultingandsolutions.com/"));
+                    config.setAllowedOrigins(Collections.singletonList("*"));
                     config.setAllowedMethods(Collections.singletonList("*"));
                     config.setAllowCredentials(true);
                     config.setAllowedHeaders(Collections.singletonList("*"));
