@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/secret-santa/user")
-@CrossOrigin(origins = "https://ssb.cloudconsultingandsolutions.com/")
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private SecretSantaUserService userService;
@@ -30,12 +30,14 @@ public class UserController {
     private SecretSantaGroupService secretSantaGroupService;
 
     @GetMapping("/friends")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<List<SecretSantaUser>> getUserFriends(@AuthenticationPrincipal Jwt source){
         String userId = source.getClaimAsString("sub");
         return new ResponseEntity<>(userService.getUserFriends(userId), HttpStatus.OK);
     }
 
     @GetMapping("/groups")
+    @CrossOrigin(origins = "*")
     public ResponseEntity<List<SecretSantaGroup>> getUserGroups(@AuthenticationPrincipal Jwt source){
         String userId = source.getClaimAsString("sub");
         return new ResponseEntity<>(secretSantaGroupService.getAllGroupsByGroupMember(userId),
