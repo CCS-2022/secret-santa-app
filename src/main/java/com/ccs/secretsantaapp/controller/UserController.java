@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/secret-santa/user")
-@CrossOrigin(origins = "https://ss.cloudconsultingandsolutions.com/")
+@CrossOrigin(origins = "https://ssb.cloudconsultingandsolutions.com/")
 public class UserController {
     @Autowired
     private SecretSantaUserService userService;
