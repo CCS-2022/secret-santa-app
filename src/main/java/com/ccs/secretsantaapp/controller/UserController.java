@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 
+
 /**
  * Maps all operations related to user.
  * E.G. : view user's group, view user's friends, add friends and remove friends, etc...

@@ -9,6 +9,7 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/CCS-2022/secret-santa-app.git'
+                sh 'sudo cp /var/ssl/keystore.p12 /var/lib/jenkins/workspace/SS-BackEnd/src/main/resources/keystore.p12'
             }
         }
 
@@ -81,16 +82,16 @@ pipeline {
                         echo "Container does not exist. Error: ${e}"
                     }
                     sh 'ssh -tt secretsanta@192.168.1.235 docker pull ccsadmindocker/ssbackend:DEV-latest'
-                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --restart unless-stopped --network=bridge -p 8080:8080 ccsadmindocker/ssbackend:${ENVS}-latest'"
+                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --restart unless-stopped --network=bridge -p 8443:8443 ccsadmindocker/ssbackend:${ENVS}-latest'"
                     }                
             }
         }
 
         stage("Cleaning Up Storage Space"){
             steps {
-                sh 'docker system prune -f'
+                sh 'docker system prune -af'
                 echo '*** Cleaning remote server ***'
-                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -f'                          
+                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -af'                          
             }
         }
     }
