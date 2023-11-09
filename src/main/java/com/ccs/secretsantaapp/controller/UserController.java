@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * Maps all operations related to user.
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
  */
 @RestController
 @RequestMapping("/secret-santa/user")
-@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private SecretSantaUserService userService;
@@ -32,14 +30,12 @@ public class UserController {
     private SecretSantaGroupService secretSantaGroupService;
 
     @GetMapping("/friends")
-    @CrossOrigin(origins = "https://ssb.cloudconsultingandsolutions.com/")
     public ResponseEntity<List<SecretSantaUser>> getUserFriends(@AuthenticationPrincipal Jwt source){
         String userId = source.getClaimAsString("sub");
         return new ResponseEntity<>(userService.getUserFriends(userId), HttpStatus.OK);
     }
 
     @GetMapping("/groups")
-    @CrossOrigin(origins = "https://ss.cloudconsultingandsolutions.com/")
     public ResponseEntity<List<SecretSantaGroup>> getUserGroups(@AuthenticationPrincipal Jwt source){
         String userId = source.getClaimAsString("sub");
         return new ResponseEntity<>(secretSantaGroupService.getAllGroupsByGroupMember(userId),
@@ -47,7 +43,6 @@ public class UserController {
     }
 
     @GetMapping("/view-friend-requests")
-    @CrossOrigin(origins = "*")
     public ResponseEntity<List<SecretSantaFriendship>> getFriendshipRequests(@AuthenticationPrincipal Jwt source){
         return new ResponseEntity<>(secretSantaGroupService.getFriendshipRequests(source.getClaimAsString("sub")),
                 HttpStatus.OK);
