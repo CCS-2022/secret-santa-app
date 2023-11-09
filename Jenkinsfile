@@ -89,9 +89,9 @@ pipeline {
 
         stage("Cleaning Up Storage Space"){
             steps {
-                sh 'docker system prune -f'
+                sh 'docker system prune -af'
                 echo '*** Cleaning remote server ***'
-                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -f'                          
+                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -af'                          
             }
         }
     }
