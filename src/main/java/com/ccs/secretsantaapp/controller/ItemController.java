@@ -3,6 +3,7 @@ package com.ccs.secretsantaapp.controller;
 import com.ccs.secretsantaapp.dao.SecretSantaItem;
 import com.ccs.secretsantaapp.exception.EntityNotCreated;
 import com.ccs.secretsantaapp.repository.SecretSantaItemRepository;
+import com.ccs.secretsantaapp.service.SecretSantaItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,19 @@ public class ItemController {
     @Autowired
     private SecretSantaItemRepository secretSantaItemRepository;
 
+    @Autowired
+    private SecretSantaItemService secretSantaItemService;
+
     @GetMapping
     public ResponseEntity<List<SecretSantaItem>> getWishList(@AuthenticationPrincipal Jwt source){
         return new ResponseEntity<>(secretSantaItemRepository.getUserWishList(source.getClaimAsString("sub")),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/get-user-wishlist")
+    public ResponseEntity<List<SecretSantaItem>> getWishListByUser(@AuthenticationPrincipal Jwt source,
+                                                                   @RequestParam String userId) throws CannotProceedException {
+        return new ResponseEntity<>(secretSantaItemService.getWishListByUser(source.getClaimAsString("sub"), userId),
                 HttpStatus.OK);
     }
 
