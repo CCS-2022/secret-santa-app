@@ -25,6 +25,7 @@ public class SecretSantaItemService {
         Optional<SecretSantaFriendship> friendship = secretSantaFriendshipRepository
                 .getFriendshipByPartiesId(userId, friendId, true);
 
+        // If friendship does not exist, error out
         if(friendship.isPresent()){
             return secretSantaItemRepository.getUserWishList(friendId);
         } else throw new CannotProceedException();
