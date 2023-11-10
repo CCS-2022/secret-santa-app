@@ -36,6 +36,13 @@ public class ItemController {
                 HttpStatus.OK);
     }
 
+    @GetMapping("/get-wishlist-email")
+    public ResponseEntity<HttpStatus> getWishListByEmail(@AuthenticationPrincipal Jwt source,
+                                                         @RequestParam String userId){
+        return new ResponseEntity<>(secretSantaItemService.getWishListByEmail(source.getClaimAsString("sub"), userId),
+                HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<List<SecretSantaItem>> saveItems(@AuthenticationPrincipal Jwt source,
                                                     @RequestBody List<SecretSantaItem> items){
