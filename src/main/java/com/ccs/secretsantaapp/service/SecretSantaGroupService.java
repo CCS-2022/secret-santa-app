@@ -151,7 +151,7 @@ public class SecretSantaGroupService {
         ArrayList<SecretSantaUser> users = (ArrayList<SecretSantaUser>) secretSantaGroupMemberRepository.getGroupMembers(groupId);
         Map<SecretSantaUser, SecretSantaUser> pairs = pairGenerator.generatePairs(users);
 
-        emailSenderService.sendEmails((HashMap<SecretSantaUser, SecretSantaUser>) pairs);
+        emailSenderService.sendEmailsToPairs((HashMap<SecretSantaUser, SecretSantaUser>) pairs);
     }
 
     @Transactional

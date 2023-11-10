@@ -36,7 +36,7 @@ public class EmailSenderService {
                 .build();
     }
 
-    public void sendEmails(Map<SecretSantaUser, SecretSantaUser> pairs){
+    public void sendEmailsToPairs(Map<SecretSantaUser, SecretSantaUser> pairs){
         for(Map.Entry<SecretSantaUser, SecretSantaUser> entry : pairs.entrySet()){
             SimpleMailMessage message = new SimpleMailMessage();
             UserRepresentation user = KEYCLOAK
@@ -53,6 +53,20 @@ public class EmailSenderService {
             javaMailSender.send(message);
             logger.info("Email sent to " + user.getEmail());
         }
+    }
 
+    public void sendEmailToUser(String recipientId, String body){
+        SimpleMailMessage message = new SimpleMailMessage();
+        UserRepresentation user = KEYCLOAK
+                .realm(REALM)
+                .users()
+                .get(recipientId)
+                .toRepresentation();
+
+        message.setFrom("secretsantaappnotification@gmail.com");
+        message.setTo(user.getEmail());
+        message.setSubject("Secret Santa Notification!");
+        message.setText(body);
+        javaMailSender.send(message);
     }
 }
