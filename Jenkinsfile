@@ -9,7 +9,7 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/CCS-2022/secret-santa-app.git'
-                sh 'sudo cp /var/ssl/keystore.p12 /var/lib/jenkins/workspace/SS-BackEnd/src/main/resources/keystore.p12'
+                sh 'cp /var/ssl/keystore.p12 /var/lib/jenkins/workspace/SS-BackEnd/src/main/resources/keystore.p12'
             }
         }
 
