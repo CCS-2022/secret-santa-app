@@ -47,6 +47,8 @@ public class SecurityConfig {
                 // Endpoint Configuration
                 .authorizeHttpRequests()
                 .requestMatchers("/secret-santa/*").hasRole("USER")
+                .requestMatchers("/ping").permitAll()
+                .requestMatchers("/ping/*").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // Resource Server Configuration

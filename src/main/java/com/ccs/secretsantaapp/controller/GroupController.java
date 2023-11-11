@@ -7,7 +7,6 @@ import com.ccs.secretsantaapp.repository.SecretSantaGroupMemberRepository;
 import com.ccs.secretsantaapp.repository.SecretSantaUserRepository;
 import com.ccs.secretsantaapp.service.SecretSantaGroupService;
 import com.ccs.secretsantaapp.dao.SecretSantaGroup;
-import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
