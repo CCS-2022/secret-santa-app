@@ -9,8 +9,8 @@ pipeline {
         Artifactory = credentials('ArtifactoryIP') 
         DockerID = credentials('DockerHubUser')
         DevZone = credentials('DevBackZone') 
-        KeyFrom = credentials('PathToKeyStore') 
-        KeyTo = credentials('PathFromKeyStore') 
+        KeyTo = credentials('PathToKeyStore') 
+        KeyFrom = credentials('PathFromKeyStore') 
     }
     
     stages {
