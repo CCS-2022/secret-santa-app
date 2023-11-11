@@ -3,13 +3,22 @@ pipeline {
     environment {
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+        SSServer = credentials('SSServerIP')
+        SSUser = credentials('SSUserID')
+        Port = credentials('SSBackPort')
+        Artifactory = credentials('ArtifactoryIP') 
+        DockerID = credentials('DockerHubUser')
+        DevZone = credentials('DevBackZone') 
+        KeyFrom = credentials('PathToKeyStore') 
+        KeyTo = credentials('PathFromKeyStore') 
     }
     
     stages {
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/CCS-2022/secret-santa-app.git'
-                sh 'cp /var/ssl/keystore.p12 /var/lib/jenkins/workspace/SS-BackEnd/src/main/resources/keystore.p12'
+                //SSL Key CP
+                sh '${KeyFrom} ${KeyTo}'
             }
         }
 
@@ -42,7 +51,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'jfrog rt upload --url http://192.168.1.239:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} ./build/libs/*SNAPSHOT.jar ss-${ENVS}/'
+                sh 'jfrog rt upload --url http://${Artifactory}/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} ./build/libs/*SNAPSHOT.jar ss-${ENVS}/'
                 }
         }
 
@@ -51,16 +60,16 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'docker image rm ccsadmindocker/ssfrontend:${ENVS}-latest'
+                        sh 'docker image rm ${DockerID}/${DevZone}:${ENVS}-latest'
                         } catch (Exception e) {
                             echo "Image does not exist. Error: ${e}"
                         }
                     }
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh '''
-                        docker build -t ccsadmindocker/ssbackend:${ENVS}-latest .
+                        docker build -t ${DockerID}/${DevZone}:${ENVS}-latest .
                         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-                        docker push ccsadmindocker/ssbackend:DEV-latest
+                        docker push ${DockerID}/${DevZone}:${ENVS}-latest
                     '''
                 }
             }
@@ -71,17 +80,17 @@ pipeline {
                 script {
                     echo '*** Executing remote commands ***'
                     try {
-                        sh 'ssh -tt secretsanta@192.168.1.235 docker stop ssbackend'
+                        sh 'ssh -tt ${SSUser}@${SSServer} docker stop ${DevZone}'
                     } catch (Exception e){
                         echo "Container does not exist. Error: ${e}"
                     }
                     try {
-                    sh 'ssh -tt secretsanta@192.168.1.235 docker rm ssbackend'
+                    sh 'ssh -tt ${SSUser}@${SSServer} docker rm ${DevZone}'
                     } catch (Exception e){
                         echo "Container does not exist. Error: ${e}"
                     }
-                    sh 'ssh -tt secretsanta@192.168.1.235 docker pull ccsadmindocker/ssbackend:DEV-latest'
-                    sh "ssh -tt secretsanta@192.168.1.235 'docker run -d --name ssbackend --restart unless-stopped --network=bridge -p 8443:8443 ccsadmindocker/ssbackend:${ENVS}-latest'"
+                    sh 'ssh -tt ${SSUser}@${SSServer} docker pull ${DockerID}/${DevZone}:${ENVS}-latest'
+                    sh "ssh -tt ${SSUser}@${SSServer} 'docker run -d --name ${DevZone} --restart unless-stopped --network=bridge -p ${Port}:${Port} ${DockerID}/${DevZone}:${ENVS}-latest'"
                     }                
             }
         }
@@ -90,7 +99,7 @@ pipeline {
             steps {
                 sh 'docker system prune -af'
                 echo '*** Cleaning remote server ***'
-                sh 'ssh -tt secretsanta@192.168.1.235 docker system prune -af'                          
+                sh 'ssh -tt ${SSUser}@${SSServer} docker system prune -af'                          
             }
         }
     }
