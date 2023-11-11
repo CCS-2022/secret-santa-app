@@ -25,7 +25,7 @@ pipeline {
             steps {
                 git branch: 'main', url: 'https://github.com/CCS-2022/secret-santa-app.git'
                 //SSL Key CP
-                sh '${KeyFrom} ${KeyTo}'
+                sh 'cp ${KeyFrom} ${KeyTo}'
             }
         }
 
